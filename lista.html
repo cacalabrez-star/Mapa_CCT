@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Lista Rápida — Comunidade Códigos do Tempo</title>
+  <style>
+    :root{--ink:#152332;--muted:#61717d;--line:#dce5e8;--soft:#f4f8f8;--cyan:#0b7483;--gold:#8a6c12;--white:#fff}
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:#eef3f4;color:var(--ink);font:16px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+    button,input,a{font:inherit}
+    .page{width:min(920px,calc(100% - 24px));margin:24px auto;background:var(--white);border:1px solid var(--line);border-radius:24px;box-shadow:0 16px 50px rgba(31,55,66,.09);overflow:hidden}
+    header{position:relative;isolation:isolate;overflow:hidden;min-height:220px;padding:42px 46px 34px;border-bottom:1px solid var(--line);color:white;background-color:#082b49;background-image:url("fundo-cosmico.webp");background-repeat:no-repeat;background-size:100% auto;background-position:center 7%}
+    header:before{content:"";position:absolute;inset:0;z-index:-2;background:inherit;pointer-events:none}
+    header:after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(3,24,43,.94) 0%,rgba(3,24,43,.80) 38%,rgba(3,24,43,.30) 68%,rgba(3,24,43,.08) 100%),linear-gradient(180deg,rgba(3,18,35,.03),rgba(3,18,35,.18));pointer-events:none}
+    .brand{display:flex;align-items:center;gap:10px;color:#91e3ea;font-size:.82rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;text-decoration:none}
+    .mark{width:18px;height:18px;border:2px solid #91e3ea;border-radius:50%;box-shadow:inset 0 0 0 4px rgba(255,255,255,.9);background:#9fe5ea}
+    h1{margin:16px 0 8px;font-size:clamp(2rem,6vw,3.5rem);line-height:1.02;letter-spacing:-.045em}
+    header p{max-width:680px;margin:0;color:#c9dbe4;font-size:1.05rem}
+    .controls{padding:22px 46px;border-bottom:1px solid var(--line);background:var(--soft)}
+    .search{display:flex;gap:10px}
+    .search input{min-width:0;flex:1;border:1px solid #b8c9ce;border-radius:12px;padding:13px 15px;background:white;color:var(--ink);outline:none}
+    .search input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(11,116,131,.12)}
+    .print,.view{border:1px solid #b8c9ce;border-radius:12px;padding:12px 15px;background:white;color:var(--ink);font-weight:700;cursor:pointer}
+    .print{border-color:var(--cyan);background:var(--cyan);color:white;text-decoration:none;text-align:center}
+    .printbar{display:none;padding:14px 46px;border-bottom:1px solid var(--line);background:#e8f7f8;align-items:center;justify-content:space-between;gap:16px}
+    .printbar p{margin:0;color:var(--muted);font-size:.9rem}
+    .print-actions{display:flex;gap:8px;flex-wrap:wrap}
+    .printbar button{border:0;border-radius:12px;padding:12px 16px;background:var(--cyan);color:white;font-weight:800;cursor:pointer}
+    .printbar button.secondary{border:1px solid #b8c9ce;background:white;color:var(--ink)}
+    body.print-mode .controls,body.print-mode .status{display:none}
+    body.print-mode .printbar{display:flex}
+    body.print-mode header{color:var(--ink);background:white}
+    body.print-mode header:before,body.print-mode header:after{display:none}
+    body.print-mode header p{color:var(--muted)}
+    body.print-mode .brand{color:var(--cyan)}
+    body.print-mode .mark{border-color:var(--cyan)}
+    .views{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .view.active{border-color:var(--cyan);color:var(--cyan);background:#e8f7f8}
+    .status{margin:0;padding:14px 46px;color:var(--muted);font-size:.9rem;border-bottom:1px solid var(--line)}
+    main{padding:12px 46px 46px}
+    .group{padding-top:28px}
+    .group h2{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin:0 0 8px;color:var(--cyan);font-size:1.1rem;letter-spacing:.03em}
+    .group h2 span{color:var(--muted);font-size:.78rem;font-weight:600;letter-spacing:0}
+    .item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:center;padding:17px 0;border-top:1px solid var(--line)}
+    .item h3{margin:0;font-size:1.02rem;line-height:1.25}
+    .meta{margin:4px 0 0;color:var(--muted);font-size:.88rem}
+    .open{display:inline-flex;align-items:center;gap:8px;white-space:nowrap;border-radius:999px;padding:9px 13px;background:var(--ink);color:white;text-decoration:none;font-weight:750;font-size:.88rem}
+    .open:hover{background:var(--cyan)}
+    .pending{white-space:nowrap;color:#829099;font-size:.82rem;font-weight:700}
+    .empty{padding:64px 10px;text-align:center;color:var(--muted)}
+    footer{padding:24px 46px;border-top:1px solid var(--line);color:var(--muted);font-size:.85rem}
+    @media(max-width:640px){.page{width:100%;margin:0;border:0;border-radius:0;box-shadow:none}header,.controls,main,footer,.printbar{padding-left:22px;padding-right:22px}header{min-height:260px;padding-top:34px;padding-bottom:34px;background-size:cover;background-position:center top}header:after{background:linear-gradient(90deg,rgba(3,24,43,.92) 0%,rgba(3,24,43,.72) 66%,rgba(3,24,43,.22) 100%),linear-gradient(180deg,rgba(3,18,35,.02),rgba(3,18,35,.24))}.status{padding-left:22px;padding-right:22px}.search{display:grid;grid-template-columns:1fr auto}.search input{grid-column:1/-1}.print{grid-column:1}.printbar{align-items:stretch;flex-direction:column}.print-actions{display:grid}.item{gap:12px}.open{padding:8px 11px}.pending{white-space:normal;text-align:right}}
+    @media print{@page{size:A4;margin:14mm}body{background:white;font-size:10.5pt}.page{width:100%;margin:0;border:0;border-radius:0;box-shadow:none}.controls,.status,.printbar{display:none!important}header{min-height:0;padding:0 0 8mm;color:var(--ink)!important;background:white!important}.brand{color:var(--cyan)!important;font-size:8pt}header:before,header:after{display:none!important}h1{font-size:25pt;margin:4mm 0 2mm}header p{color:var(--muted)!important;font-size:10pt}.group{padding-top:7mm;break-inside:avoid}.group h2{font-size:13pt}.item{padding:3.2mm 0;break-inside:avoid}.item h3{font-size:10.5pt}.meta{font-size:8.5pt}.open{padding:0;background:none;color:var(--cyan);text-decoration:underline}.pending{color:#777}main{padding:0}footer{padding:8mm 0 0}.no-print{display:none}}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="brand" href="index.html"><span class="mark"></span>Comunidade Códigos do Tempo</a>
+      <h1>Lista rápida de conteúdos</h1>
+      <p>Encontre o tema, toque em <strong>Abrir</strong> e siga diretamente para a aula ou material.</p>
+    </header>
+    <section class="controls" aria-label="Controles da lista">
+      <div class="search">
+        <input id="search" type="search" placeholder="Pesquisar Crono Psi, MOAP, pulsar…" autocomplete="off">
+        <a class="print" id="print" href="lista.html?imprimir=1" target="_blank" rel="noopener">Versão para imprimir</a>
+        <button class="view" id="clear" type="button">Limpar</button>
+      </div>
+      <div class="views">
+        <button class="view" data-view="start" type="button">Comece aqui</button>
+        <button class="view active" data-view="themes" type="button">Por percurso</button>
+        <button class="view" data-view="az" type="button">Índice A–Z</button>
+      </div>
+    </section>
+    <section class="printbar" aria-label="Opções de impressão">
+      <p>Esta versão acompanha automaticamente os links da planilha.</p>
+      <div class="print-actions">
+        <button id="pdf-now" type="button">Baixar PDF com links</button>
+        <button class="secondary" id="print-now" type="button">Imprimir</button>
+      </div>
+    </section>
+    <p class="status" id="status" role="status">33 conteúdos · links serão inseridos</p>
+    <main id="content">
+      <section class="group"><h2>Trilha Iniciantes <span>4 conteúdos</span></h2>
+        <article class="item"><div><h3>Despertar no Tempo Real</h3><p class="meta">Aula · Inicial</p></div><span class="pending">Link em breve</span></article>
+        <article class="item"><div><h3>Decifre o Código da sua Alma</h3><p class="meta">Aula · Inicial</p></div><span class="pending">Link em breve</span></article>
+        <article class="item"><div><h3>Sincronize sua Vida</h3><p class="meta">Aula · Inicial</p></div><span class="pending">Link em breve</span></article>
+        <article class="item"><div><h3>Castelo de Destino</h3><p class="meta">Aula · Inicial</p></div><span class="pending">Link em breve</span></article>
+      </section>
+      <section class="group"><h2>Prática cotidiana <span>1 conteúdo</span></h2>
+        <article class="item"><div><h3>Encontros de Meditação Diária</h3><p class="meta">Prática · Todos</p></div><span class="pending">Link em breve</span></article>
+      </section>
+      <section class="group"><h2>Desvendando os Códigos do Tempo <span>14 conteúdos</span></h2>
+        <article class="item"><div><h3>Banco Psi e Transição Planetária</h3><p class="meta">Aula · Intermediário</p></div><span class="pending">Link em breve</span></article>
+        <article class="item"><div><h3>O Encantamento do Sonho</h3><p class="meta">Aula · Intermediário</p></div><span class="pending">Link em breve</span></article>
+        <article class="item"><div><h3>Harmônicas e Códons</h3><p class="meta">Aula · Intermediário</p></div><span class="pending">Link em breve</span></article>
+        <article class="item"><div><h3>Telektonon</h3><p class="meta">Aula · Intermediário</p></div><span class="pending">Link em breve</span></article>
+        <article class="item"><div><h3>Plasmas e Meditação dos Chakras</h3><p class="meta">Aula · Intermediário</p></div><span class="pending">Link em breve</span></article>
+        <article class="item"><div><h3>Arquétipos Galácticos</h3><p class="meta">Aula · Intermediário</p></div><span class="pending">Link em breve</span></article>
+        <article class="item"><div><h3>Runas Futhark</h3><p class="meta">Aula · Intermediário</p></div><span class="pending">Link em breve</span></article>
+        <article class="item"><div><h3>Quinta Força do Oráculo</h3><p class="meta">Aula · Intermediário</p></div><span class="pending">Link em breve</span></article>
+        <article class="item"><div><h3>O Código 19</h3><p class="meta">Aula · Intermediário</p></div><span class="pending">Link em breve</span></article>
+        <article class="item"><div><h3>HAAB</h3><p class="meta">Aula · Intermediário</p></div><span class="pending">Link em breve</span></article>
+        <article class="item"><div><h3>Como calcular a Frequência Pulsar</h3><p class="meta">Aula · Intermediário</p></div><span class="pending">Link em breve</span></article>
+        <article class="item"><div><h3>As 7 Gerações Perdidas</h3><p class="meta">Aula · Intermediário</p></div><span class="pending">Link em breve</span></article>
+        <article class="item"><div><h3>A Tumba de Pacal Votan</h3><p class="meta">Aula · Intermediário</p></div><span class="pending">Link em breve</span></article>
+        <article class="item"><div><h3>A Matemática Maia</h3><p class="meta">Aula · Intermediário</p></div><span class="pending">Link em breve</span></article>
+      </section>
+      <section class="group"><h2>Biblioteca e encontros <span>7 conteúdos</span></h2>
+        <article class="item"><div><h3>Arquivo Galáctico — Biblioteca</h3><p class="meta">Biblioteca · Todos</p></div><span class="pending">Link em breve</span></article>
+        <article class="item"><div><h3>Workshop Bússola Galáctica</h3><p class="meta">Workshop · Intermediário</p></div><span class="pending">Link em breve</span></article>
+        <article class="item"><div><h3>A Noosfera e o Novo Tempo</h3><p class="meta">Encontro · Intermediário</p></div><span class="pending">Link em breve</span></article>
+        <article class="item"><div><h3>Transição Biosfera–Noosfera</h3><p class="meta">Encontro · Avançado</p></div><span class="pending">Link em breve</span></article>
+        <article class="item"><div><h3>O Poder do Campo Sincronizado</h3><p class="meta">Encontro · Todos</p></div><span class="pending">Link em breve</span></article>
+        <article class="item"><div><h3>Matemática Sagrada — Gematria</h3><p class="meta">Encontro · Avançado</p></div><span class="pending">Link em breve</span></article>
+        <article class="item"><div><h3>De José Argüelles a Valum Votan</h3><p class="meta">Percurso · Todos</p></div><span class="pending">Link em breve</span></article>
+      </section>
+      <section class="group"><h2>Fractal Magos da Terra <span>7 conteúdos</span></h2>
+        <article class="item"><div><h3>Fractal — Semana 1: Tempo Natural</h3><p class="meta">Percurso · Avançado</p></div><span class="pending">Link em breve</span></article>
+        <article class="item"><div><h3>Fractal — Semana 2: Ordem Genética</h3><p class="meta">Percurso · Avançado</p></div><span class="pending">Link em breve</span></article>
+        <article class="item"><div><h3>Fractal — Semana 3: Telektonon</h3><p class="meta">Percurso · Avançado</p></div><span class="pending">Link em breve</span></article>
+        <article class="item"><div><h3>Fractal — Semana 4: Tempo e Biosfera</h3><p class="meta">Percurso · Avançado</p></div><span class="pending">Link em breve</span></article>
+        <article class="item"><div><h3>Fractal — Semana 5: 20 Tábuas</h3><p class="meta">Percurso · Avançado</p></div><span class="pending">Link em breve</span></article>
+        <article class="item"><div><h3>Fractal — Semana 6: Ciência da Telepatia</h3><p class="meta">Percurso · Avançado</p></div><span class="pending">Link em breve</span></article>
+        <article class="item"><div><h3>Fractal — Semana 7: Senda do Mago</h3><p class="meta">Percurso · Avançado</p></div><span class="pending">Link em breve</span></article>
+      </section>
+    </main>
+  </div>
+  <script src="pdf-links.js"></script>
+  <script>
+    const FEED='https://docs.google.com/spreadsheets/d/10wWTuh-Cj0xbQdAVV-hnW_EROM4gd0iw8A3uZoaNcOU/gviz/tq?tqx=out:csv&sheet=CONTEUDOS_PUBLICOS';
+    const FALLBACK=[
+      ['despertar',10,'Despertar no Tempo Real','Trilha Iniciantes','Aula','Inicial','Introdução à frequência natural e à mudança de percepção do tempo.'],
+      ['alma',20,'Decifre o Código da sua Alma','Trilha Iniciantes','Aula','Inicial','Primeiro contato com Kin, assinatura galáctica e códigos pessoais.'],
+      ['sincronize',30,'Sincronize sua Vida','Trilha Iniciantes','Aula','Inicial','Integração dos ciclos à experiência cotidiana.'],
+      ['castelo',40,'Castelo de Destino','Trilha Iniciantes','Aula','Inicial','Leitura inicial do percurso dentro do Tzolkin.'],
+      ['meditacao',50,'Encontros de Meditação Diária','Prática cotidiana','Prática','Todos','Vivência diária dos plasmas, ciclos e códigos do tempo.'],
+      ['banco-psi',60,'Banco Psi e Transição Planetária','Desvendando os Códigos do Tempo','Aula','Intermediário','Banco Psi, Crono Psi e processos de transição planetária.'],
+      ['sonho',70,'O Encantamento do Sonho','Desvendando os Códigos do Tempo','Aula','Intermediário','Introdução ao sistema, seus códigos e sua ordem genética.'],
+      ['codons',80,'Harmônicas e Códons','Desvendando os Códigos do Tempo','Aula','Intermediário','Relações matemáticas entre harmônicas, Kins e códons.'],
+      ['telektonon',90,'Telektonon','Desvendando os Códigos do Tempo','Aula','Intermediário','Profecia, cartografia e ciência telepática do tempo.'],
+      ['plasmas',100,'Plasmas e Meditação dos Chakras','Desvendando os Códigos do Tempo','Aula','Intermediário','Os sete plasmas radiais e sua prática psicofísica.'],
+      ['arquetipos',110,'Arquétipos Galácticos','Desvendando os Códigos do Tempo','Aula','Intermediário','Arquétipos associados aos códigos e às práticas galácticas.'],
+      ['futhark',120,'Runas Futhark','Desvendando os Códigos do Tempo','Aula','Intermediário','Introdução ao sistema simbólico das runas Futhark.'],
+      ['oraculo',130,'Quinta Força do Oráculo','Desvendando os Códigos do Tempo','Aula','Intermediário','Relações do oráculo e conexões entre Kins.'],
+      ['codigo19',140,'O Código 19','Desvendando os Códigos do Tempo','Aula','Intermediário','O princípio 19 e suas relações com 19:260.'],
+      ['haab',150,'HAAB','Desvendando os Códigos do Tempo','Aula','Intermediário','O ciclo de 360 dias e suas relações calendáricas.'],
+      ['pulsar',160,'Como calcular a Frequência Pulsar','Desvendando os Códigos do Tempo','Aula','Intermediário','Cálculo e aplicação das frequências pulsar.'],
+      ['geracoes',170,'As 7 Gerações Perdidas','Desvendando os Códigos do Tempo','Aula','Intermediário','Narrativa histórica e resgate telepático das gerações.'],
+      ['tumba',180,'A Tumba de Pacal Votan','Desvendando os Códigos do Tempo','Aula','Intermediário','Símbolos, narrativa e códigos ligados à tumba.'],
+      ['matematica',190,'A Matemática Maia','Desvendando os Códigos do Tempo','Aula','Intermediário','Fundamentos numéricos presentes nos códigos do tempo.'],
+      ['arquivo',200,'Arquivo Galáctico — Biblioteca','Biblioteca','Biblioteca','Todos','Arquivos, imagens, agenda, Sincronário e Tzolkin para consulta.'],
+      ['bussola',210,'Workshop Bússola Galáctica','Workshops','Workshop','Intermediário','Introdução e prática com a Bússola Galáctica.'],
+      ['noosfera',220,'A Noosfera e o Novo Tempo','Encontros com convidados','Encontro','Intermediário','Encontro sobre Noosfera, consciência e novo tempo.'],
+      ['biosfera',230,'Transição Biosfera–Noosfera','Encontros com convidados','Encontro','Avançado','Processos planetários de transição da biosfera à Noosfera.'],
+      ['campo',240,'O Poder do Campo Sincronizado','Encontros ao Vivo','Encontro','Todos','Meditação e experiência coletiva de sincronização.'],
+      ['gematria',250,'Matemática Sagrada — Gematria','Encontros com convidados','Encontro','Avançado','Gematria, simbolismo e códigos do tempo.'],
+      ['historia',260,'De José Argüelles a Valum Votan','Série histórica','Percurso','Todos','Vida, obra e desenvolvimento da Lei do Tempo.'],
+      ['f1',270,'Fractal — Semana 1: Tempo Natural','Fractal Magos da Terra','Percurso','Avançado','HAAB, reforma do calendário e fundamentos do percurso.'],
+      ['f2',280,'Fractal — Semana 2: Ordem Genética','Fractal Magos da Terra','Percurso','Avançado','Encantamento do Sonho, Tzolkin e ordem genética.'],
+      ['f3',290,'Fractal — Semana 3: Telektonon','Fractal Magos da Terra','Percurso','Avançado','Profecia, linhagem e ordem telepática.'],
+      ['f4',300,'Fractal — Semana 4: Tempo e Biosfera','Fractal Magos da Terra','Percurso','Avançado','Projeto Rinri e transição Biosfera–Noosfera.'],
+      ['f5',310,'Fractal — Semana 5: 20 Tábuas','Fractal Magos da Terra','Percurso','Avançado','Runas UR, códons e Lei do Tempo.'],
+      ['f6',320,'Fractal — Semana 6: Ciência da Telepatia','Fractal Magos da Terra','Percurso','Avançado','Plasma psicofísico, Parton Cúbico e 7:7::7:7.'],
+      ['f7',330,'Fractal — Semana 7: Senda do Mago','Fractal Magos da Terra','Percurso','Avançado','260 Postulados, 19:260 e modo de vida da quarta dimensão.']
+    ].map(x=>({id:x[0],publicar:'Sim',ordem:x[1],titulo:x[2],trilha:x[3],tipo:x[4],nivel:x[5],descricao:x[6],tags:'',link:''}));
+    const printMode=new URLSearchParams(location.search).get('imprimir')==='1';
+    if(printMode)document.body.classList.add('print-mode');
+    const CACHE_KEY='codigos-do-tempo-conteudos-v1';
+    let items=FALLBACK,view='themes',query='',source='segurança';
+    try{const saved=JSON.parse(localStorage.getItem(CACHE_KEY));if(Array.isArray(saved)&&saved.length){items=saved;source='dados recentes da planilha'}}catch(e){}
+    const $=s=>document.querySelector(s);
+    const norm=s=>(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+    const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    function csv(text){let rows=[],row=[],cell='',quote=false;for(let i=0;i<text.length;i++){const c=text[i],n=text[i+1];if(c==='"'&&quote&&n==='"'){cell+='"';i++}else if(c==='"'){quote=!quote}else if(c===','&&!quote){row.push(cell);cell=''}else if((c==='\n'||c==='\r')&&!quote){if(c==='\r'&&n==='\n')i++;row.push(cell);if(row.some(v=>v!==''))rows.push(row);row=[];cell=''}else cell+=c}row.push(cell);if(row.some(v=>v!==''))rows.push(row);return rows}
+    function fromCsv(text){const rows=csv(text),h=rows.shift().map(norm);const col=(...names)=>h.findIndex(x=>names.some(n=>x.startsWith(norm(n))));return rows.map(r=>({id:r[col('ID')]||'',publicar:r[col('Publicar')]||'',ordem:Number(r[col('Ordem')])||9999,titulo:r[col('Título','Titulo')]||'',trilha:r[col('Trilha')]||'Outros conteúdos',tipo:r[col('Tipo')]||'Conteúdo',nivel:r[col('Nível','Nivel')]||'',descricao:r[col('Descrição','Descricao')]||'',tags:r[col('Tags')]||'',link:r[col('Link direto','Link')]||''})).filter(i=>norm(i.publicar)==='sim'&&i.titulo)}
+    function validLink(v){try{const u=new URL(v);return u.protocol==='https:'||u.protocol==='http:'}catch{return false}}
+    function itemHtml(i){const action=validLink(i.link)?`<a class="open" href="${esc(i.link)}" target="_blank" rel="noopener">Abrir <span aria-hidden="true">↗</span></a>`:'<span class="pending">Link em breve</span>';return `<article class="item"><div><h3>${esc(i.titulo)}</h3><p class="meta">${esc(i.tipo)}${i.nivel?' · '+esc(i.nivel):''}${i.descricao?' — '+esc(i.descricao):''}</p></div>${action}</article>`}
+    function render(){let list=items.filter(i=>!query||norm([i.titulo,i.trilha,i.tipo,i.nivel,i.descricao,i.tags].join(' ')).includes(norm(query)));if(view==='start')list=list.filter(i=>i.nivel==='Inicial'||i.id==='meditacao');if(view==='az')list.sort((a,b)=>a.titulo.localeCompare(b.titulo,'pt-BR'));else list.sort((a,b)=>a.ordem-b.ordem);let groups;if(view==='az')groups=[['Índice A–Z',list]];else{const map=new Map;list.forEach(i=>{if(!map.has(i.trilha))map.set(i.trilha,[]);map.get(i.trilha).push(i)});groups=[...map.entries()]}
+      $('#content').innerHTML=groups.length?groups.map(([name,group])=>`<section class="group"><h2>${esc(name)} <span>${group.length} ${group.length===1?'conteúdo':'conteúdos'}</span></h2>${group.map(itemHtml).join('')}</section>`).join(''):'<div class="empty"><strong>Nenhum conteúdo encontrado.</strong><br>Tente outra palavra.</div>';
+      const linked=list.filter(i=>validLink(i.link)).length;$('#status').textContent=`${list.length} conteúdos · ${linked} links disponíveis${source==='segurança'?' · versão de segurança':''}`;
+      document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
+    }
+    async function load(){try{const response=await fetch(FEED,{cache:'no-store'});if(!response.ok)throw new Error('HTTP '+response.status);const fresh=fromCsv(await response.text());if(!fresh.length)throw new Error('lista vazia');items=fresh;source='planilha atualizada';try{localStorage.setItem(CACHE_KEY,JSON.stringify(fresh))}catch(e){}}catch(e){console.warn('Planilha indisponível; usando os dados mais recentes disponíveis.',e)}render()}
+    $('#search').addEventListener('input',e=>{query=e.target.value;render()});
+    $('#clear').addEventListener('click',()=>{query='';$('#search').value='';render()});
+    $('#pdf-now').addEventListener('click',()=>CodigosPDF.download(items));
+    $('#print-now').addEventListener('click',()=>window.print());
+    document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>{view=b.dataset.view;render()}));
+    render();load();
+  </script>
+</body>
+</html>
